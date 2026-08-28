@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Shopping Flashcards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+:root{
+  --paper:#F3F5F2; --card:#FFFFFF; --rule:#DFE3DD;
+  --ink:#181C19; --ink-2:#464C48; --ink-3:#6A726D;
+  --quote-bg:#F0F3EF;
+  --dark-fg:#9C2436; --dark-bg:#F8E7E9;
+  --grey-fg:#7A5D0D; --grey-bg:#F6EEDA;
+  --stripe:#9C2436;
+  --btn:#181C19; --btn-ink:#F3F5F2; --btn-line:#CDD3CB;
+  --focus:#9C2436;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#14171A; --card:#1B1F22; --rule:#2C3236;
+    --ink:#ECEFEA; --ink-2:#B3BAB5; --ink-3:#8E9691;
+    --quote-bg:#222829;
+    --dark-fg:#F0899A; --dark-bg:#3A1F25;
+    --grey-fg:#E5C169; --grey-bg:#332C18;
+    --stripe:#C4485C;
+    --btn:#ECEFEA; --btn-ink:#14171A; --btn-line:#3A4145;
+    --focus:#F0899A;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14171A; --card:#1B1F22; --rule:#2C3236;
+  --ink:#ECEFEA; --ink-2:#B3BAB5; --ink-3:#8E9691;
+  --quote-bg:#222829;
+  --dark-fg:#F0899A; --dark-bg:#3A1F25;
+  --grey-fg:#E5C169; --grey-bg:#332C18;
+  --stripe:#C4485C;
+  --btn:#ECEFEA; --btn-ink:#14171A; --btn-line:#3A4145;
+  --focus:#F0899A;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"Source Serif 4",Georgia,"Times New Roman",serif;
+  font-size:17px; line-height:1.6; padding:40px 20px 72px;
+}
+.wrap{max-width:660px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+
+header{display:flex;flex-direction:column;gap:10px}
+.eyebrow{font-family:Archivo,system-ui,sans-serif;font-size:11.5px;font-weight:700;
+  letter-spacing:.17em;text-transform:uppercase;color:var(--ink-3)}
+h1{font-family:Archivo,system-ui,sans-serif;font-size:clamp(27px,4.8vw,36px);
+  font-weight:700;letter-spacing:-.022em;line-height:1.1;text-wrap:balance}
+.hint{color:var(--ink-2);font-size:16px;max-width:52ch}
+
+.meter{display:flex;align-items:center;gap:16px}
+.track{flex:1;height:3px;background:var(--rule);border-radius:2px;overflow:hidden}
+.track i{display:block;height:100%;background:var(--stripe);width:0;transition:width .3s ease}
+.pos{font-family:Archivo,system-ui,sans-serif;font-size:12.5px;font-weight:600;
+  color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* every full-width panel shares one shell */
+.panel{
+  background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--stripe);
+  border-radius:6px;padding:28px 30px 30px;
+  display:flex;flex-direction:column;gap:18px;min-height:300px;
+}
+.card{cursor:pointer;transition:opacity .16s ease, transform .16s ease}
+.card:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+.card.grey{--stripe:var(--grey-fg)}
+.card.turning{opacity:0;transform:translateY(5px)}
+@media (prefers-reduced-motion:reduce){
+  .card,.track i{transition:none}
+  .card.turning{opacity:1;transform:none}
+}
+
+.rail{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:22px}
+.ctx{font-family:Archivo,system-ui,sans-serif;font-size:11px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.tag{font-family:Archivo,system-ui,sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;border-radius:3px;padding:4px 9px;
+  margin-left:auto;white-space:nowrap}
+.tag.t-dark{background:var(--dark-bg);color:var(--dark-fg)}
+.tag.t-grey{background:var(--grey-bg);color:var(--grey-fg)}
+
+.face-a{flex:1;display:flex;flex-direction:column;justify-content:center;padding:6px 0 10px}
+.face-a h2{font-family:Archivo,system-ui,sans-serif;font-size:clamp(26px,4.6vw,34px);
+  font-weight:700;letter-spacing:-.022em;line-height:1.12;text-wrap:balance}
+.face-b{display:flex;flex-direction:column;gap:20px}
+.face-b .name{font-family:Archivo,system-ui,sans-serif;font-size:21px;font-weight:600;
+  letter-spacing:-.012em;line-height:1.2}
+.block{display:flex;flex-direction:column;gap:6px}
+.block .lbl{font-family:Archivo,system-ui,sans-serif;font-size:10.5px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.block p{color:var(--ink-2);font-size:16.5px}
+.block.eg p{background:var(--quote-bg);border-radius:4px;padding:12px 15px;color:var(--ink)}
+
+/* start / intro / finish panels */
+.panel h2.big{font-family:Archivo,system-ui,sans-serif;font-size:clamp(23px,3.6vw,27px);
+  font-weight:700;letter-spacing:-.02em;line-height:1.2;text-wrap:balance}
+.panel .body{display:flex;flex-direction:column;gap:14px;flex:1;justify-content:center}
+.panel .body p{color:var(--ink-2);max-width:50ch}
+.panel .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:20px}
+button{font-family:Archivo,system-ui,sans-serif;font-size:14px;font-weight:600;
+  border-radius:6px;padding:11px 20px;cursor:pointer;border:1px solid transparent;
+  transition:opacity .15s ease, color .15s ease}
+button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.primary{background:var(--btn);color:var(--btn-ink)}
+.primary:hover:not(:disabled){opacity:.86}
+.primary:disabled{opacity:.4;cursor:default}
+.ghost{background:transparent;color:var(--ink-2);border-color:var(--btn-line)}
+.ghost:hover:not(:disabled){color:var(--ink)}
+.ghost:disabled{opacity:.38;cursor:default}
+.note{font-family:Archivo,system-ui,sans-serif;font-size:13px;color:var(--ink-3);
+  font-variant-numeric:tabular-nums}
+.spacer{flex:1}
+.keys{font-family:Archivo,system-ui,sans-serif;font-size:12.5px;color:var(--ink-3)}
+.keys kbd{font-family:Archivo,system-ui,sans-serif;font-size:11px;border:1px solid var(--rule);
+  border-radius:3px;padding:2px 6px;background:var(--card)}
+
+.list{display:none;flex-direction:column;gap:12px}
+.list.on{display:flex}
+.lcard{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--stripe);
+  border-radius:5px;padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+.lcard.grey{--stripe:var(--grey-fg)}
+.lh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lh .n{font-family:Archivo,system-ui,sans-serif;font-size:11.5px;font-weight:700;
+  color:var(--ink-3);font-variant-numeric:tabular-nums}
+.lh h3{font-family:Archivo,system-ui,sans-serif;font-size:18px;font-weight:600;line-height:1.25}
+
+@media (max-width:560px){
+  body{padding:26px 15px 56px}
+  .panel{padding:22px 20px;min-height:0}
+  .tag{margin-left:0}
+  .controls .spacer{display:none}
+  .keys{display:none}
+}
+@media print{
+  body{background:#fff;padding:0;color:#000}
+  #start,#intro,#deck,#finish,.controls,.meter,.viewtoggle,.keys{display:none !important}
+  .list{display:flex !important}
+  .lcard{break-inside:avoid;page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Online shopping</div>
+    <h1>Design feature flashcards</h1>
+    <p class="hint">Each card shows the name of a design feature. Turn it over for the definition and an example.</p>
+  </header>
+
+  <section class="panel" id="start" tabindex="-1">
+    <div class="body">
+      <h2 class="big">Ready when you are</h2>
+      <p>This set takes about five minutes. There is no score and no time limit.</p>
+    </div>
+    <div class="row"><button class="primary" id="begin" type="button">Click to begin</button></div>
+  </section>
+
+  <section class="panel" id="intro" tabindex="-1">
+    <div class="body">
+      <h2 class="big">Before you start</h2>
+        <p>Online shops are designed to influence what you buy, what information you hand over, and what you agree to. Some of it is built to work against you. These are sometimes called dark patterns, or dark nudges: interface choices that steer people toward decisions they would not otherwise make.</p>
+        <p>The next 12 cards name the features most commonly used, one card each.</p>
+        <p>The front of each card gives the name of a feature. Turn it over for the definition and an example of what it looks like on a real website.</p>
+    </div>
+    <div class="row"><button class="primary" id="go" type="button">Start the cards</button></div>
+  </section>
+
+  <div class="meter" id="meter">
+    <div class="track"><i id="bar"></i></div>
+    <div class="pos" id="pos" role="status" aria-live="polite">1 / 12</div>
+    <button class="ghost viewtoggle" id="toggle" type="button">See all</button>
+  </div>
+
+  <div class="deck" id="deck">
+    <div class="panel card" id="card" tabindex="0" role="button" aria-label="Flashcard — activate to turn over"></div>
+    <div class="controls" id="controls">
+      <button class="primary" id="flip" type="button">Turn over</button>
+      <button class="ghost" id="prev" type="button">Back</button>
+      <span class="note" id="note" role="status" aria-live="polite"></span>
+      <div class="spacer"></div>
+      <div class="keys"><kbd>Space</kbd> turn &nbsp; <kbd>&larr;</kbd> back</div>
+    </div>
+  </div>
+
+  <section class="panel" id="finish" tabindex="-1">
+    <div class="body">
+      <h2 class="big">That's the end of the cards</h2>
+      <p>Thank you. Please go back to the survey now to complete it.</p>
+      <p>If the survey is still open in another tab, return to that tab and continue from where you left off.</p>
+    </div>
+    <div class="row" id="finishRow">
+      <button class="ghost" id="again" type="button">Go through the cards again</button>
+    </div>
+  </section>
+
+  <div class="list" id="list"></div>
+
+</div>
+
+<script>
+var CARDS = [
+ {
+  "ctx": "Product card",
+  "kind": "dark",
+  "name": "Fake Scarcity",
+  "def": "A fabricated low stock claim. It exploits fear of missing out and shortens decision time.",
+  "eg": "Website adds a fake “Only 2 left in stock!” label."
+ },
+ {
+  "ctx": "Product card",
+  "kind": "dark",
+  "name": "Sneak into Basket Pattern",
+  "def": "Adding items the user never chose. Some people won’t notice until after paying.",
+  "eg": "Website auto-adds the hoodie to every cart."
+ },
+ {
+  "ctx": "Sale banner",
+  "kind": "dark",
+  "name": "False Urgency",
+  "def": "A deadline that does not exist. A sale banner counts down to zero, then restarts on refresh. Nothing ends, the price never changes. A visible deadline pushes people to decide now rather than compare or wait.",
+  "eg": "Countdown timer that resets when you reload the website."
+ },
+ {
+  "ctx": "Sale banner",
+  "kind": "grey",
+  "name": "Vague Pressure",
+  "def": "Nothing stated is false, but it creates the same hurry.",
+  "eg": "Website says “sale ends soon” but they do not give an end date."
+ },
+ {
+  "ctx": "Sign-up form",
+  "kind": "dark",
+  "name": "Privacy Zuckering",
+  "def": "Tricking users into sharing far more personal data than the service needs.",
+  "eg": "Website collects your IP address, bank details, DOB and name unnecessarily."
+ },
+ {
+  "ctx": "Sign-up form",
+  "kind": "dark",
+  "name": "Preselection",
+  "def": "Consent chosen for you by default, by defaulting checkboxes to “yes”.",
+  "eg": "Email only, but pre-ticked marketing boxes."
+ },
+ {
+  "ctx": "Discount pop-up",
+  "kind": "dark",
+  "name": "Confirm Shaming",
+  "def": "Wording the opt-out to make users feel stupid or guilty for declining.",
+  "eg": "Decline button reads “No thanks, I hate saving money”."
+ },
+ {
+  "ctx": "Discount pop-up",
+  "kind": "dark",
+  "name": "Obstruction",
+  "def": "Deliberately making the escape route hard to find, making users feel trapped.",
+  "eg": "Hide the x close button for 5 seconds."
+ },
+ {
+  "ctx": "Search bar",
+  "kind": "dark",
+  "name": "Disguised Ads",
+  "def": "Paid content dressed up as organic results.",
+  "eg": "Paid placements styled like organic results."
+ },
+ {
+  "ctx": "Search bar",
+  "kind": "grey",
+  "name": "Manipulated Ranking",
+  "def": "The artificial inflation or deflation of product positions in search results and recommendation lists, to deceive shoppers and boost sales for specific sellers.",
+  "eg": "Website quietly ranks overstocked items first."
+ },
+ {
+  "ctx": "Checkout",
+  "kind": "dark",
+  "name": "Hidden Cost / Drip Pricing",
+  "def": "You have already typed your address, so you push through rather than start again. It is the most disliked trick in online shopping.",
+  "eg": "Surprise “service & handling fee” at the final step."
+ },
+ {
+  "ctx": "Checkout",
+  "kind": "dark",
+  "name": "Sneaking",
+  "def": "A small charge slips past. Many people pay it without ever noticing it was there.",
+  "eg": "A $9.99 “shipping protection” already added to every cart."
+ }
+];
+
+"use strict";
+/* ---- settings you may want to adjust -----------------------------------
+   SECONDS_BEFORE_NEXT: pause on the definition side before the participant
+     can move on. Set to 0 to remove the pause.
+   SECONDS_BEFORE_TURN: same idea for the name side. 0 = turn over at will.
+   SURVEY_URL: paste the survey link and the finish screen gains a button
+     back to it. Left empty, the finish screen is text only. */
+var SECONDS_BEFORE_NEXT = 5;
+var SECONDS_BEFORE_TURN = 0;
+var SURVEY_URL = "";
+
+var esc=function(s){return String(s).replace(/[&<>]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];});};
+var $=function(id){return document.getElementById(id);};
+
+var start=$("start"), intro=$("intro"), meter=$("meter"), deck=$("deck"),
+    card=$("card"), finish=$("finish"), list=$("list"),
+    flipBtn=$("flip"), prevBtn=$("prev"), note=$("note"),
+    bar=$("bar"), pos=$("pos"), toggle=$("toggle");
+
+var i=0, showingB=false, phase="start", locked=false, tick=null, left=0;
+
+function clearTick(){ if(tick){ clearInterval(tick); tick=null; } }
+
+function label(){
+  if(!showingB) return "Turn over";
+  return (i===CARDS.length-1) ? "Finish" : "Next card";
+}
+function paint(){
+  flipBtn.textContent = label();
+  flipBtn.disabled = locked;
+  prevBtn.disabled = (i===0);
+  if(locked){
+    note.textContent = "Continue in " + left + "s";
+  } else {
+    note.textContent = showingB ? "" : "Turn the card over to continue";
+  }
+}
+function lockFor(seconds){
+  clearTick();
+  if(!seconds){ locked=false; paint(); return; }
+  locked=true; left=seconds; paint();
+  tick=setInterval(function(){
+    left--;
+    if(left<=0){ clearTick(); locked=false; }
+    paint();
+  },1000);
+}
+
+function setPhase(p){
+  phase=p;
+  if(p!=="cards") clearTick();
+  start.style.display  = (p==="start")?"flex":"none";
+  intro.style.display  = (p==="intro")?"flex":"none";
+  meter.style.display  = (p==="cards")?"flex":"none";
+  deck.style.display   = (p==="cards")?"block":"none";
+  finish.style.display = (p==="finish")?"flex":"none";
+  if(list.classList.contains("on")) deck.style.display="none";
+}
+
+function tagFor(c){
+  if(!c.kind) return "";
+  return c.kind==="grey"
+    ? '<span class="tag t-grey">Grey area</span>'
+    : '<span class="tag t-dark">Dark pattern</span>';
+}
+function rail(c){ return '<div class="rail"><span class="ctx">'+esc(c.ctx||"")+'</span>'+tagFor(c)+'</div>'; }
+function sideA(c){ return rail(c)+'<div class="face-a"><h2>'+esc(c.name)+'</h2></div>'; }
+function sideB(c){
+  return rail(c)+'<div class="face-b">'+
+    '<div class="name">'+esc(c.name)+'</div>'+
+    '<div class="block"><div class="lbl">Definition</div><p>'+esc(c.def)+'</p></div>'+
+    '<div class="block eg"><div class="lbl">Example</div><p>'+esc(c.eg)+'</p></div>'+
+    '</div>';
+}
+function render(){
+  var c=CARDS[i];
+  card.className="panel card"+(c.kind==="grey"?" grey":"");
+  card.innerHTML=showingB?sideB(c):sideA(c);
+  pos.textContent=(i+1)+" / "+CARDS.length;
+  bar.style.width=((i+(showingB?1:0.5))/CARDS.length*100)+"%";
+  lockFor(showingB?SECONDS_BEFORE_NEXT:SECONDS_BEFORE_TURN);
+}
+function swap(fn){
+  clearTick();
+  card.classList.add("turning");
+  setTimeout(function(){ fn(); render(); card.classList.remove("turning"); },150);
+}
+/* the card must be turned over before it can be left behind */
+function primary(){
+  if(locked) return;
+  if(!showingB){ swap(function(){ showingB=true; }); return; }
+  if(i===CARDS.length-1){ toFinish(); return; }
+  swap(function(){ i=i+1; showingB=false; });
+}
+function back(){
+  if(i===0) return;
+  swap(function(){ i=i-1; showingB=false; });
+}
+function toCards(){
+  i=0; showingB=false; setPhase("cards"); render();
+  card.focus(); window.scrollTo({top:0,behavior:"smooth"});
+}
+function toFinish(){
+  clearTick(); setPhase("finish");
+  bar.style.width="100%"; pos.textContent=CARDS.length+" / "+CARDS.length;
+  finish.focus(); window.scrollTo({top:0,behavior:"smooth"});
+}
+
+$("begin").addEventListener("click",function(){ setPhase("intro"); intro.focus(); });
+$("go").addEventListener("click",toCards);
+$("again").addEventListener("click",toCards);
+flipBtn.addEventListener("click",primary);
+prevBtn.addEventListener("click",back);
+card.addEventListener("click",primary);
+card.addEventListener("keydown",function(e){
+  if(e.key===" "||e.key==="Enter"){ e.preventDefault(); primary(); }
+});
+document.addEventListener("keydown",function(e){
+  if(phase!=="cards"||list.classList.contains("on")) return;
+  if(e.target&&e.target.tagName==="BUTTON"&&e.key===" ") return;
+  if(e.key==="ArrowLeft"){ back(); }
+  else if(e.key==="ArrowRight"){ primary(); }
+  else if(e.key===" "&&e.target===document.body){ e.preventDefault(); primary(); }
+});
+
+(function buildList(){
+  var html="";
+  for(var k=0;k<CARDS.length;k++){
+    var c=CARDS[k];
+    html+='<div class="lcard'+(c.kind==="grey"?" grey":"")+'">'+
+            '<div class="lh"><span class="n">'+(k+1)+'</span><h3>'+esc(c.name)+'</h3>'+tagFor(c)+'</div>'+
+            '<div class="block"><div class="lbl">Definition</div><p>'+esc(c.def)+'</p></div>'+
+            '<div class="block eg"><div class="lbl">Example</div><p>'+esc(c.eg)+'</p></div>'+
+          '</div>';
+  }
+  list.innerHTML=html;
+})();
+toggle.addEventListener("click",function(){
+  var on=list.classList.toggle("on");
+  deck.style.display = on ? "none" : (phase==="cards"?"block":"none");
+  toggle.textContent = on ? "Back to cards" : "See all";
+});
+
+if(SURVEY_URL){
+  var a=document.createElement("a");
+  a.href=SURVEY_URL; a.className="primary";
+  a.style.cssText="font-family:Archivo,system-ui,sans-serif;font-size:14px;font-weight:600;"+
+    "border-radius:6px;padding:11px 20px;text-decoration:none;display:inline-block";
+  a.textContent="Return to the survey";
+  $("finishRow").insertBefore(a,$("again"));
+}
+
+setPhase("start");
+render();
+</script>
+</body>
+</html>
